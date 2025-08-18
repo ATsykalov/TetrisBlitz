@@ -168,13 +168,13 @@ class TetrisGame:
             if self.paused:
                 return
                 
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 self.move_piece(-1, 0)
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 self.move_piece(1, 0)
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 self.move_piece(0, 1)
-            elif event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_UP or event.key == pygame.K_w or event.key == pygame.K_SPACE:
                 self.rotate_piece()
             elif event.key == pygame.K_c:
                 self.hard_drop()
@@ -371,9 +371,9 @@ class TetrisGame:
         controls_y_start = 200
         controls = [
             "CONTROLS:",
-            "← → : Move",
-            "↓ : Soft Drop", 
-            "↑/Space : Rotate",
+            "A/D : Move",
+            "S : Soft Drop", 
+            "W/Space : Rotate",
             "C : Hard Drop",
             "P : Pause",
             "ESC : Menu"
