@@ -56,4 +56,5 @@ args = "python main.py"
 outputType = "vnc"
 
 [deployment]
-deploymentTarget = "cloudrun"
+deploymentTarget = "gce"
+run = ["sh", "-c", "python main.py"]
