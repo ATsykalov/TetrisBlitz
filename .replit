@@ -4,6 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+packages = ["SDL2", "SDL2_image", "SDL2_mixer", "SDL2_ttf", "fontconfig", "freetype", "libjpeg", "libpng", "pkg-config", "portmidi"]
 
 [workflows]
 runButton = "Project"
@@ -24,6 +25,10 @@ args = "tetris_game"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Tetris VNC"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Web Tetris"
 
 [[workflows.workflow]]
 name = "Tetris Game"
@@ -55,8 +60,24 @@ args = "python main.py"
 [workflows.workflow.metadata]
 outputType = "vnc"
 
+[[workflows.workflow]]
+name = "Web Tetris"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python app.py"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [deployment]
 deploymentTarget = "gce"
 run = ["sh", "-c", "python main.py"]
 build = ["sh", "-c", "pip install pygame"]
 ignorePorts = true
+
+[[ports]]
+localPort = 5000
+externalPort = 80

@@ -12,11 +12,12 @@ Design style: Modern Classic - combining 8-bit aesthetics with contemporary clea
 
 ## System Architecture
 
-### Game Engine Architecture
-- **Main Game Loop**: Built with Pygame for real-time rendering and event handling
-- **Modular Design**: Separated into distinct modules for game logic, authentication, database, and piece management
-- **State Management**: Game state includes grid, current/next pieces, score, level, and timing mechanics
-- **Event-Driven Input**: Handles keyboard input for piece movement, rotation, and menu navigation
+### Web Application Architecture
+- **Frontend**: HTML5 Canvas with JavaScript game engine for real-time rendering and smooth animations
+- **Backend**: Flask web server with RESTful API endpoints for user management and score tracking  
+- **Game Engine**: JavaScript-based Tetris implementation with identical mechanics to original Pygame version
+- **State Management**: Client-side game state with server-side persistence for scores and user data
+- **Input Handling**: Browser keyboard events for responsive piece movement, rotation, and game controls
 
 ### Authentication System
 - **Simple Username-Based Auth**: No password authentication - uses username as unique identifier
@@ -79,9 +80,11 @@ The architecture prioritizes simplicity and reliability, with automatic fallback
 - Event-driven state management for smooth menu transitions
 - Optimized rendering pipeline for 60 FPS gameplay with animation support
 
-### Deployment Configuration (August 18, 2025)
-- **Issue Identified**: Current deployment configured as Autoscale (Cloud Run) expecting HTTP web application
-- **Problem**: Tetris is a desktop GUI application requiring VNC display, not HTTP endpoints
-- **Solution Required**: Change to Reserved VM deployment with VNC output for proper Pygame support
-- **Run Command**: `python main.py` (entry point verified and working)
-- **Dependencies**: pygame>=2.6.1 (already installed via pyproject.toml)
+### Web Application Implementation (August 18, 2025)
+- **Solution**: Completely rewrote Tetris as web application using Flask + HTML5 Canvas + JavaScript
+- **Architecture**: Flask backend with RESTful API, HTML5 Canvas frontend with real-time JavaScript game engine
+- **Features Preserved**: User authentication, score tracking, statistics, all original game mechanics
+- **New Capabilities**: Web-accessible for all users, responsive design, leaderboard API ready
+- **Deployment**: Now compatible with Autoscale deployment as proper HTTP web application
+- **Run Command**: `python app.py` (Flask web server on port 5000)
+- **Dependencies**: flask, HTML5 Canvas, JavaScript ES6+

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Game - Modern Classic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-area {
+            display: flex;
+            gap: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .game-board {
+            position: relative;
+        }
+
+        #gameCanvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: #f8f8f8;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 200px;
+        }
+
+        .info-panel {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+        }
+
+        .info-panel h3 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+
+        .level, .lines {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .next-piece-container {
+            text-align: center;
+        }
+
+        #nextCanvas {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            margin-top: 10px;
+        }
+
+        .controls {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .controls h4 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-form h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .login-form h2 {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            border-color: #2c5aa0;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-form button:hover {
+            background: #1e3d6f;
+        }
+
+        .game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .game-over-content h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .final-score {
+            font-size: 24px;
+            margin: 15px 0;
+            color: #2c5aa0;
+        }
+
+        .new-record {
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .game-over-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .game-over-buttons button {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3d6f;
+        }
+
+        .btn-secondary {
+            background: #ddd;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #ccc;
+        }
+
+        .pause-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .pause-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .pause-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-area" id="gameArea" style="display: none;">
+            <div class="game-board">
+                <canvas id="gameCanvas" width="300" height="600"></canvas>
+            </div>
+            <div class="sidebar">
+                <div class="info-panel">
+                    <h3>Счёт</h3>
+                    <div class="score" id="score">0</div>
+                    <div class="level">Уровень: <span id="level">1</span></div>
+                    <div class="lines">Линии: <span id="lines">0</span></div>
+                </div>
+                <div class="info-panel next-piece-container">
+                    <h3>Следующая фигура</h3>
+                    <canvas id="nextCanvas" width="80" height="80"></canvas>
+                </div>
+                <div class="info-panel">
+                    <h4>Управление:</h4>
+                    <div class="controls">
+                        ← → Движение<br>
+                        ↓ Ускорение<br>
+                        ↑ Поворот<br>
+                        Пробел - Пауза<br>
+                        ESC - Меню
+                    </div>
+                </div>
+                <div class="info-panel">
+                    <h4>Игрок:</h4>
+                    <div id="playerName"></div>
+                    <div id="playerStats"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран входа -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-form">
+            <h1>TETRIS</h1>
+            <h2>Modern Classic Edition</h2>
+            <input type="text" id="usernameInput" placeholder="Введите ваше имя" maxlength="20">
+            <button onclick="login()">НАЧАТЬ ИГРУ</button>
+        </div>
+    </div>
+
+    <!-- Экран паузы -->
+    <div class="pause-screen" id="pauseScreen">
+        <div class="pause-content">
+            <h2>ПАУЗА</h2>
+            <p>Нажмите пробел для продолжения</p>
+        </div>
+    </div>
+
+    <!-- Экран окончания игры -->
+    <div class="game-over-screen" id="gameOverScreen">
+        <div class="game-over-content">
+            <h2>ИГРА ОКОНЧЕНА</h2>
+            <div class="final-score" id="finalScore">Очки: 0</div>
+            <div class="new-record hidden" id="newRecord">НОВЫЙ РЕКОРД!</div>
+            <div class="game-over-buttons">
+                <button class="btn-primary" onclick="restartGame()">ИГРАТЬ СНОВА</button>
+                <button class="btn-secondary" onclick="showLogin()">СМЕНИТЬ ИГРОКА</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/tetris.js"></script>
+</body>
+</html>
