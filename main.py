@@ -57,6 +57,7 @@ def main():
 
 def show_login_screen(screen, clock, auth_manager):
     """Display login screen and return username"""
+    import time
     font = pygame.font.Font(None, 36)
     input_font = pygame.font.Font(None, 24)
     username = ""
@@ -94,6 +95,14 @@ def show_login_screen(screen, clock, auth_manager):
         # Username text
         text_surface = input_font.render(username, True, (255, 255, 255))
         screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
+        
+        # Blinking cursor animation
+        cursor_visible = (int(time.time() * 2) % 2) == 0  # Blinks every 0.5 seconds
+        if cursor_visible:
+            cursor_x = input_rect.x + 5 + text_surface.get_width()
+            pygame.draw.line(screen, (255, 255, 255), 
+                           (cursor_x, input_rect.y + 5), 
+                           (cursor_x, input_rect.y + 20), 2)
         
         # Enter instruction
         enter_text = input_font.render("Press ENTER to start", True, (200, 200, 200))

@@ -112,10 +112,19 @@ class TetrisGame:
 
     def handle_input(self, event):
         """Handle keyboard input"""
-        if self.game_over or self.paused:
+        if self.game_over:
             return
         
         if event.type == pygame.KEYDOWN:
+            # Pause can be toggled even when paused
+            if event.key == pygame.K_p:
+                self.paused = not self.paused
+                return
+            
+            # Other controls only work when not paused
+            if self.paused:
+                return
+                
             if event.key == pygame.K_LEFT:
                 self.move_piece(-1, 0)
             elif event.key == pygame.K_RIGHT:
@@ -126,8 +135,6 @@ class TetrisGame:
                 self.rotate_piece()
             elif event.key == pygame.K_c:
                 self.hard_drop()
-            elif event.key == pygame.K_p:
-                self.paused = not self.paused
 
     def move_piece(self, dx, dy):
         """Move the current piece"""
