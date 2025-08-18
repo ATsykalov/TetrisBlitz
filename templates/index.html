@@ -293,7 +293,7 @@
                         ↓ Ускорение<br>
                         ↑ Поворот<br>
                         Пробел - Пауза<br>
-                        ESC - Меню
+                        ESC - Пауза
                     </div>
                 </div>
                 <div class="info-panel">
@@ -319,7 +319,12 @@
     <div class="pause-screen" id="pauseScreen">
         <div class="pause-content">
             <h2>ПАУЗА</h2>
-            <p>Нажмите пробел для продолжения</p>
+            <div style="margin: 20px 0;">
+                <button class="btn-primary" onclick="game.togglePause()" style="margin: 5px; padding: 10px 20px;">ПРОДОЛЖИТЬ</button><br>
+                <button class="btn-secondary" onclick="restartGame()" style="margin: 5px; padding: 10px 20px;">НАЧАТЬ ЗАНОВО</button><br>
+                <button class="btn-secondary" onclick="showLogin()" style="margin: 5px; padding: 10px 20px;">СМЕНИТЬ ИГРОКА</button>
+            </div>
+            <p style="font-size: 14px; color: #666;">Или нажмите пробел/Esc для продолжения</p>
         </div>
     </div>
 

@@ -110,7 +110,7 @@ class TetrisGame {
                     break;
                 case 'Escape':
                     e.preventDefault();
-                    this.showGameOverScreen();
+                    this.togglePause();
                     break;
             }
         });
