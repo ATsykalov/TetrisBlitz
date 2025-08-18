@@ -15,11 +15,16 @@ def main():
     # Initialize authentication
     auth_manager = AuthManager()
     
-    # Show login screen
-    username = show_login_screen(screen, clock, auth_manager)
-    if not username:
-        pygame.quit()
-        sys.exit()
+    # Show main menu first
+    while True:
+        action = show_main_menu(screen, clock)
+        if action == "new_game":
+            username = show_login_screen(screen, clock, auth_manager)
+            if username:
+                break
+        elif action == "quit":
+            pygame.quit()
+            sys.exit()
     
     # Initialize game
     game = TetrisGame(screen, username, auth_manager)
@@ -45,8 +50,13 @@ def main():
         
         if not game.update():
             # Game over
-            show_game_over(screen, clock, game.score, auth_manager, username)
-            game = TetrisGame(screen, username, auth_manager)
+            action = show_game_over(screen, clock, game.score, auth_manager, username)
+            if action == "play_again":
+                game = TetrisGame(screen, username, auth_manager)
+            elif action == "main_menu":
+                # Return to main menu
+                main()
+                return
         
         game.draw()
         pygame.display.flip()
@@ -232,63 +242,197 @@ def show_stats(screen, clock, auth_manager, username):
         clock.tick(60)
 
 def show_game_over(screen, clock, score, auth_manager, username):
-    """Show game over screen"""
-    # Modern Classic colors
-    BACKGROUND_COLOR = (224, 224, 224)
-    TEXT_COLOR = (51, 51, 51)
-    GAMEOVER_BG_COLOR = (255, 255, 255)
-    GAMEOVER_BORDER_COLOR = (150, 150, 150)
-    GAMEOVER_TITLE_COLOR = (200, 50, 50)  # Soft red
-    
-    font = pygame.font.Font(None, 36)
-    small_font = pygame.font.Font(None, 24)
-    tiny_font = pygame.font.Font(None, 18)
-    
+    """Show game over screen with buttons"""
     # Update user stats
     auth_manager.update_user_score(username, score)
     stats = auth_manager.get_user_stats(username)
     is_new_record = score == stats['high_score'] and score > 0
     
+    selected = 0
+    menu_items = [
+        ("ИГРАТЬ СНОВА", "play_again"),
+        ("ГЛАВНОЕ МЕНЮ", "main_menu")
+    ]
+    
+    fade_alpha = 0
+    
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
-                return
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = (selected - 1) % len(menu_items)
+                elif event.key == pygame.K_DOWN:
+                    selected = (selected + 1) % len(menu_items)
+                elif event.key == pygame.K_RETURN:
+                    return menu_items[selected][1]
         
-        # Semi-transparent overlay
+        # Fade in effect
+        fade_alpha = min(180, fade_alpha + 3)
+        
+        # Dark semi-transparent overlay
         overlay = pygame.Surface((800, 600))
-        overlay.set_alpha(180)
-        overlay.fill(BACKGROUND_COLOR)
+        overlay.set_alpha(fade_alpha)
+        overlay.fill((51, 51, 51))  # #333333 dark gray
         screen.blit(overlay, (0, 0))
         
-        # Game over box
-        box_rect = pygame.Rect(200, 180, 400, 240)
-        pygame.draw.rect(screen, GAMEOVER_BG_COLOR, box_rect)
-        pygame.draw.rect(screen, GAMEOVER_BORDER_COLOR, box_rect, 2)
+        if fade_alpha >= 180:  # Only show content when fully faded
+            # Large GAME OVER text in white
+            title_font = pygame.font.Font(None, 64)
+            title = title_font.render("GAME OVER", True, (255, 255, 255))
+            screen.blit(title, (400 - title.get_width() // 2, 150))
+            
+            # Score information
+            score_font = pygame.font.Font(None, 32)
+            
+            # New record notification
+            if is_new_record:
+                record_text = score_font.render("NEW RECORD!", True, (100, 255, 100))
+                screen.blit(record_text, (400 - record_text.get_width() // 2, 220))
+            
+            # Final score
+            final_score_text = score_font.render(f"FINAL SCORE: {score}", True, (255, 255, 255))
+            screen.blit(final_score_text, (400 - final_score_text.get_width() // 2, 260))
+            
+            # Menu buttons
+            button_font = pygame.font.Font(None, 28)
+            button_y_start = 350
+            button_height = 40
+            button_width = 180
+            button_spacing = 60
+            
+            for i, (text, action) in enumerate(menu_items):
+                is_selected = i == selected
+                button_rect = pygame.Rect(310, button_y_start + i * button_spacing, button_width, button_height)
+                
+                # Button styling
+                if is_selected:
+                    pygame.draw.rect(screen, (255, 255, 255), button_rect)
+                    pygame.draw.rect(screen, (200, 200, 200), button_rect, 2)
+                    text_color = (51, 51, 51)
+                else:
+                    pygame.draw.rect(screen, (100, 100, 100), button_rect)
+                    pygame.draw.rect(screen, (150, 150, 150), button_rect, 2)
+                    text_color = (255, 255, 255)
+                
+                # Button text
+                button_text = button_font.render(text, True, text_color)
+                text_x = button_rect.x + (button_width - button_text.get_width()) // 2
+                text_y = button_rect.y + (button_height - button_text.get_height()) // 2
+                screen.blit(button_text, (text_x, text_y))
+        
+        pygame.display.flip()
+        clock.tick(60)
+
+def show_main_menu(screen, clock):
+    """Display main menu and return action"""
+    import random
+    import math
+    
+    # Modern Classic colors
+    BACKGROUND_COLOR = (224, 224, 224)
+    TEXT_COLOR = (51, 51, 51)
+    BUTTON_COLOR = (255, 255, 255)
+    BUTTON_HOVER_COLOR = (51, 51, 51)
+    BUTTON_TEXT_COLOR = (51, 51, 51)
+    BUTTON_TEXT_HOVER_COLOR = (255, 255, 255)
+    DECORATIVE_ALPHA = 30
+    
+    title_font = pygame.font.Font(None, 64)
+    button_font = pygame.font.Font(None, 32)
+    
+    menu_items = [
+        ("НОВАЯ ИГРА", "new_game"),
+        ("ВЫХОД", "quit")
+    ]
+    
+    selected = 0
+    
+    # Generate decorative tetromino positions
+    decorative_pieces = []
+    piece_colors = [(0, 255, 255), (255, 255, 0), (128, 0, 128), (0, 128, 0), 
+                   (255, 0, 0), (255, 165, 0), (0, 0, 255)]
+    
+    for _ in range(8):
+        decorative_pieces.append({
+            'x': random.randint(-50, 850),
+            'y': random.randint(-50, 650),
+            'color': random.choice(piece_colors),
+            'rotation': random.randint(0, 3) * 90,
+            'size': random.randint(40, 80)
+        })
+    
+    fade_alpha = 0
+    fade_in = True
+    
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = (selected - 1) % len(menu_items)
+                elif event.key == pygame.K_DOWN:
+                    selected = (selected + 1) % len(menu_items)
+                elif event.key == pygame.K_RETURN:
+                    return menu_items[selected][1]
+        
+        # Fade in effect
+        if fade_in:
+            fade_alpha = min(255, fade_alpha + 5)
+            if fade_alpha >= 255:
+                fade_in = False
+        
+        screen.fill(BACKGROUND_COLOR)
+        
+        # Draw decorative background tetrominos
+        for piece in decorative_pieces:
+            surf = pygame.Surface((piece['size'], piece['size']), pygame.SRCALPHA)
+            color_with_alpha = (*piece['color'], DECORATIVE_ALPHA)
+            surf.fill(color_with_alpha)
+            rotated_surf = pygame.transform.rotate(surf, piece['rotation'])
+            screen.blit(rotated_surf, (piece['x'], piece['y']))
+        
+        # Apply fade overlay
+        if fade_alpha < 255:
+            fade_overlay = pygame.Surface((800, 600))
+            fade_overlay.set_alpha(255 - fade_alpha)
+            fade_overlay.fill(BACKGROUND_COLOR)
+            screen.blit(fade_overlay, (0, 0))
         
         # Title
-        title = font.render("GAME OVER", True, GAMEOVER_TITLE_COLOR)
-        screen.blit(title, (400 - title.get_width() // 2, 210))
+        title = title_font.render("TETRIS GAME", True, TEXT_COLOR)
+        screen.blit(title, (400 - title.get_width() // 2, 150))
         
-        # New record notification
-        if is_new_record:
-            record_text = small_font.render("NEW RECORD!", True, (50, 150, 50))
-            screen.blit(record_text, (400 - record_text.get_width() // 2, 250))
+        # Subtitle
+        subtitle_font = pygame.font.Font(None, 24)
+        subtitle = subtitle_font.render("Modern Classic Edition", True, TEXT_COLOR)
+        screen.blit(subtitle, (400 - subtitle.get_width() // 2, 210))
         
-        # Score
-        score_text = small_font.render(f"Final Score: {score}", True, TEXT_COLOR)
-        screen.blit(score_text, (400 - score_text.get_width() // 2, 290))
+        # Menu buttons
+        button_y_start = 300
+        button_height = 50
+        button_width = 200
+        button_spacing = 70
         
-        # High score
-        high_score_text = small_font.render(f"Best Score: {stats['high_score']}", True, TEXT_COLOR)
-        screen.blit(high_score_text, (400 - high_score_text.get_width() // 2, 320))
-        
-        # Games played
-        games_text = small_font.render(f"Games Played: {stats['games_played']}", True, TEXT_COLOR)
-        screen.blit(games_text, (400 - games_text.get_width() // 2, 350))
-        
-        # Instructions
-        inst = tiny_font.render("Press any key to continue", True, (120, 120, 120))
-        screen.blit(inst, (400 - inst.get_width() // 2, 390))
+        for i, (text, action) in enumerate(menu_items):
+            is_selected = i == selected
+            button_rect = pygame.Rect(300, button_y_start + i * button_spacing, button_width, button_height)
+            
+            # Button background
+            button_color = BUTTON_HOVER_COLOR if is_selected else BUTTON_COLOR
+            text_color = BUTTON_TEXT_HOVER_COLOR if is_selected else BUTTON_TEXT_COLOR
+            
+            pygame.draw.rect(screen, button_color, button_rect)
+            pygame.draw.rect(screen, (150, 150, 150), button_rect, 2)
+            
+            # Button text
+            button_text = button_font.render(text, True, text_color)
+            text_x = button_rect.x + (button_width - button_text.get_width()) // 2
+            text_y = button_rect.y + (button_height - button_text.get_height()) // 2
+            screen.blit(button_text, (text_x, text_y))
         
         pygame.display.flip()
         clock.tick(60)

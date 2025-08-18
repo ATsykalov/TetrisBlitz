@@ -21,6 +21,10 @@ args = "Tetris Game"
 task = "workflow.run"
 args = "tetris_game"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Tetris VNC"
+
 [[workflows.workflow]]
 name = "Tetris Game"
 author = "agent"
@@ -39,3 +43,14 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pip install pygame && python main.py"
+
+[[workflows.workflow]]
+name = "Tetris VNC"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
+
+[workflows.workflow.metadata]
+outputType = "vnc"
