@@ -73,10 +73,8 @@ waitForPort = 5000
 outputType = "webview"
 
 [deployment]
-deploymentTarget = "gce"
-run = ["sh", "-c", "python main.py"]
-build = ["sh", "-c", "pip install pygame"]
-ignorePorts = true
+deploymentTarget = "cloudrun"
+run = ["sh", "-c", "python app.py"]
 
 [[ports]]
 localPort = 5000

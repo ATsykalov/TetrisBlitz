@@ -76,6 +76,7 @@ class TetrisGame {
         
         this.initBoard();
         this.bindEvents();
+        this.bindMobileEvents();
     }
     
     initBoard() {
@@ -114,6 +115,68 @@ class TetrisGame {
                     break;
             }
         });
+    }
+    
+    bindMobileEvents() {
+        // Привязка событий для мобильных кнопок
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        const downBtn = document.getElementById('downBtn');
+        const rotateBtn = document.getElementById('rotateBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        
+        // Функции для предотвращения прокрутки на мобильных
+        const preventDefault = (e) => e.preventDefault();
+        
+        if (leftBtn) {
+            leftBtn.addEventListener('touchstart', preventDefault);
+            leftBtn.addEventListener('touchend', preventDefault);
+            leftBtn.addEventListener('click', () => {
+                if (!this.isGameOver && !this.isPaused) {
+                    this.movePiece(-1, 0);
+                }
+            });
+        }
+        
+        if (rightBtn) {
+            rightBtn.addEventListener('touchstart', preventDefault);
+            rightBtn.addEventListener('touchend', preventDefault);
+            rightBtn.addEventListener('click', () => {
+                if (!this.isGameOver && !this.isPaused) {
+                    this.movePiece(1, 0);
+                }
+            });
+        }
+        
+        if (downBtn) {
+            downBtn.addEventListener('touchstart', preventDefault);
+            downBtn.addEventListener('touchend', preventDefault);
+            downBtn.addEventListener('click', () => {
+                if (!this.isGameOver && !this.isPaused) {
+                    this.movePiece(0, 1);
+                }
+            });
+        }
+        
+        if (rotateBtn) {
+            rotateBtn.addEventListener('touchstart', preventDefault);
+            rotateBtn.addEventListener('touchend', preventDefault);
+            rotateBtn.addEventListener('click', () => {
+                if (!this.isGameOver && !this.isPaused) {
+                    this.rotatePiece();
+                }
+            });
+        }
+        
+        if (pauseBtn) {
+            pauseBtn.addEventListener('touchstart', preventDefault);
+            pauseBtn.addEventListener('touchend', preventDefault);
+            pauseBtn.addEventListener('click', () => {
+                if (!this.isGameOver) {
+                    this.togglePause();
+                }
+            });
+        }
     }
     
     createPiece() {
@@ -446,8 +509,9 @@ class TetrisGame {
         this.spawnPiece();
         this.updateUI();
         
-        // Показать игровое поле
+        // Показать игровое поле и мобильные кнопки
         document.getElementById('gameArea').style.display = 'flex';
+        document.getElementById('mobileControls').style.display = 'block';
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('gameOverScreen').style.display = 'none';
         
@@ -526,6 +590,7 @@ function restartGame() {
 
 function showLogin() {
     document.getElementById('gameArea').style.display = 'none';
+    document.getElementById('mobileControls').style.display = 'none';
     document.getElementById('gameOverScreen').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
     document.getElementById('usernameInput').value = '';

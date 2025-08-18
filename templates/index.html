@@ -267,6 +267,115 @@
         .hidden {
             display: none !important;
         }
+
+        /* Мобильные кнопки управления */
+        .mobile-controls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .mobile-btn {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #333;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .mobile-btn:active {
+            background: #2c5aa0;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .mobile-btn.wide {
+            width: 140px;
+        }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                overflow-y: auto;
+                height: 100vh;
+            }
+
+            .game-area {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+                max-width: 100%;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+                min-width: auto;
+            }
+
+            .info-panel {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px;
+            }
+
+            .next-piece-container {
+                order: -1;
+            }
+
+            #gameCanvas {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
+            }
+
+            .mobile-controls {
+                display: block;
+            }
+
+            .login-form, .game-over-content, .pause-content {
+                max-width: 90%;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .mobile-btn.wide {
+                width: 110px;
+            }
+
+            .control-row {
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -338,6 +447,21 @@
                 <button class="btn-primary" onclick="restartGame()">ИГРАТЬ СНОВА</button>
                 <button class="btn-secondary" onclick="showLogin()">СМЕНИТЬ ИГРОКА</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Мобильные кнопки управления -->
+    <div class="mobile-controls" id="mobileControls">
+        <div class="control-row">
+            <div class="mobile-btn" id="rotateBtn">↻</div>
+        </div>
+        <div class="control-row">
+            <div class="mobile-btn" id="leftBtn">←</div>
+            <div class="mobile-btn" id="downBtn">↓</div>
+            <div class="mobile-btn" id="rightBtn">→</div>
+        </div>
+        <div class="control-row">
+            <div class="mobile-btn wide" id="pauseBtn">ПАУЗА</div>
         </div>
     </div>
 
