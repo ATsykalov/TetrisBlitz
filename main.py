@@ -58,10 +58,16 @@ def main():
 def show_login_screen(screen, clock, auth_manager):
     """Display login screen and return username"""
     import time
-    font = pygame.font.Font(None, 36)
+    # Modern Classic colors
+    BACKGROUND_COLOR = (224, 224, 224)
+    TEXT_COLOR = (51, 51, 51)
+    INPUT_BG_COLOR = (255, 255, 255)
+    INPUT_BORDER_COLOR = (150, 150, 150)
+    
+    font = pygame.font.Font(None, 48)  # Larger title
     input_font = pygame.font.Font(None, 24)
+    small_font = pygame.font.Font(None, 18)
     username = ""
-    active = True
     
     while True:
         for event in pygame.event.get():
@@ -78,34 +84,40 @@ def show_login_screen(screen, clock, auth_manager):
                     if len(username) < 20 and event.unicode.isprintable():
                         username += event.unicode
         
-        screen.fill((0, 0, 0))
+        # Light gray background
+        screen.fill(BACKGROUND_COLOR)
         
         # Title
-        title = font.render("TETRIS", True, (255, 255, 255))
-        screen.blit(title, (400 - title.get_width() // 2, 200))
+        title = font.render("TETRIS", True, TEXT_COLOR)
+        screen.blit(title, (400 - title.get_width() // 2, 180))
+        
+        # Subtitle
+        subtitle = input_font.render("Modern Classic Edition", True, TEXT_COLOR)
+        screen.blit(subtitle, (400 - subtitle.get_width() // 2, 230))
         
         # Instructions
-        inst = input_font.render("Enter your username:", True, (255, 255, 255))
-        screen.blit(inst, (400 - inst.get_width() // 2, 280))
+        inst = input_font.render("Enter your username:", True, TEXT_COLOR)
+        screen.blit(inst, (400 - inst.get_width() // 2, 290))
         
-        # Input box
-        input_rect = pygame.Rect(300, 320, 200, 30)
-        pygame.draw.rect(screen, (255, 255, 255), input_rect, 2)
+        # Input box with modern styling
+        input_rect = pygame.Rect(300, 320, 200, 35)
+        pygame.draw.rect(screen, INPUT_BG_COLOR, input_rect)
+        pygame.draw.rect(screen, INPUT_BORDER_COLOR, input_rect, 2)
         
         # Username text
-        text_surface = input_font.render(username, True, (255, 255, 255))
-        screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
+        text_surface = input_font.render(username, True, TEXT_COLOR)
+        screen.blit(text_surface, (input_rect.x + 8, input_rect.y + 8))
         
         # Blinking cursor animation
-        cursor_visible = (int(time.time() * 2) % 2) == 0  # Blinks every 0.5 seconds
+        cursor_visible = (int(time.time() * 2) % 2) == 0
         if cursor_visible:
-            cursor_x = input_rect.x + 5 + text_surface.get_width()
-            pygame.draw.line(screen, (255, 255, 255), 
-                           (cursor_x, input_rect.y + 5), 
-                           (cursor_x, input_rect.y + 20), 2)
+            cursor_x = input_rect.x + 8 + text_surface.get_width()
+            pygame.draw.line(screen, TEXT_COLOR, 
+                           (cursor_x, input_rect.y + 6), 
+                           (cursor_x, input_rect.y + 26), 2)
         
         # Enter instruction
-        enter_text = input_font.render("Press ENTER to start", True, (200, 200, 200))
+        enter_text = small_font.render("Press ENTER to start", True, (120, 120, 120))
         screen.blit(enter_text, (400 - enter_text.get_width() // 2, 380))
         
         pygame.display.flip()
@@ -113,6 +125,13 @@ def show_login_screen(screen, clock, auth_manager):
 
 def show_menu(screen, clock, auth_manager, username):
     """Show pause menu and return action"""
+    # Modern Classic colors
+    BACKGROUND_COLOR = (224, 224, 224)
+    TEXT_COLOR = (51, 51, 51)
+    MENU_BG_COLOR = (255, 255, 255)
+    MENU_BORDER_COLOR = (150, 150, 150)
+    SELECTED_COLOR = (100, 100, 255)
+    
     font = pygame.font.Font(None, 36)
     small_font = pygame.font.Font(None, 24)
     
@@ -141,32 +160,39 @@ def show_menu(screen, clock, auth_manager, username):
         
         # Semi-transparent overlay
         overlay = pygame.Surface((800, 600))
-        overlay.set_alpha(128)
-        overlay.fill((0, 0, 0))
+        overlay.set_alpha(180)
+        overlay.fill(BACKGROUND_COLOR)
         screen.blit(overlay, (0, 0))
         
-        # Menu box
-        menu_rect = pygame.Rect(250, 200, 300, 200)
-        pygame.draw.rect(screen, (50, 50, 50), menu_rect)
-        pygame.draw.rect(screen, (255, 255, 255), menu_rect, 2)
+        # Menu box with modern styling
+        menu_rect = pygame.Rect(250, 200, 300, 220)
+        pygame.draw.rect(screen, MENU_BG_COLOR, menu_rect)
+        pygame.draw.rect(screen, MENU_BORDER_COLOR, menu_rect, 2)
         
         # Title
-        title = font.render("PAUSED", True, (255, 255, 255))
-        screen.blit(title, (400 - title.get_width() // 2, 220))
+        title = font.render("PAUSED", True, TEXT_COLOR)
+        screen.blit(title, (400 - title.get_width() // 2, 230))
         
         # Menu items
         for i, (text, action) in enumerate(menu_items):
-            color = (255, 255, 0) if i == selected else (255, 255, 255)
+            color = SELECTED_COLOR if i == selected else TEXT_COLOR
             item_text = small_font.render(text, True, color)
-            screen.blit(item_text, (400 - item_text.get_width() // 2, 260 + i * 30))
+            screen.blit(item_text, (400 - item_text.get_width() // 2, 270 + i * 35))
         
         pygame.display.flip()
         clock.tick(60)
 
 def show_stats(screen, clock, auth_manager, username):
     """Show user statistics"""
+    # Modern Classic colors
+    BACKGROUND_COLOR = (224, 224, 224)
+    TEXT_COLOR = (51, 51, 51)
+    STATS_BG_COLOR = (255, 255, 255)
+    STATS_BORDER_COLOR = (150, 150, 150)
+    
     font = pygame.font.Font(None, 36)
     small_font = pygame.font.Font(None, 24)
+    tiny_font = pygame.font.Font(None, 18)
     
     stats = auth_manager.get_user_stats(username)
     
@@ -175,26 +201,31 @@ def show_stats(screen, clock, auth_manager, username):
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 return
         
-        screen.fill((0, 0, 0))
+        screen.fill(BACKGROUND_COLOR)
+        
+        # Stats box
+        stats_rect = pygame.Rect(200, 180, 400, 280)
+        pygame.draw.rect(screen, STATS_BG_COLOR, stats_rect)
+        pygame.draw.rect(screen, STATS_BORDER_COLOR, stats_rect, 2)
         
         # Title
-        title = font.render("STATISTICS", True, (255, 255, 255))
-        screen.blit(title, (400 - title.get_width() // 2, 200))
+        title = font.render("STATISTICS", True, TEXT_COLOR)
+        screen.blit(title, (400 - title.get_width() // 2, 210))
         
         # Username
-        username_text = small_font.render(f"Player: {username}", True, (255, 255, 255))
+        username_text = small_font.render(f"Player: {username}", True, TEXT_COLOR)
         screen.blit(username_text, (400 - username_text.get_width() // 2, 280))
         
         # High score
-        score_text = small_font.render(f"Best Score: {stats['high_score']}", True, (255, 255, 255))
+        score_text = small_font.render(f"Best Score: {stats['high_score']}", True, TEXT_COLOR)
         screen.blit(score_text, (400 - score_text.get_width() // 2, 320))
         
         # Games played
-        games_text = small_font.render(f"Games Played: {stats['games_played']}", True, (255, 255, 255))
+        games_text = small_font.render(f"Games Played: {stats['games_played']}", True, TEXT_COLOR)
         screen.blit(games_text, (400 - games_text.get_width() // 2, 360))
         
         # Instructions
-        inst = small_font.render("Press any key to return", True, (200, 200, 200))
+        inst = tiny_font.render("Press any key to return", True, (120, 120, 120))
         screen.blit(inst, (400 - inst.get_width() // 2, 420))
         
         pygame.display.flip()
@@ -202,11 +233,21 @@ def show_stats(screen, clock, auth_manager, username):
 
 def show_game_over(screen, clock, score, auth_manager, username):
     """Show game over screen"""
+    # Modern Classic colors
+    BACKGROUND_COLOR = (224, 224, 224)
+    TEXT_COLOR = (51, 51, 51)
+    GAMEOVER_BG_COLOR = (255, 255, 255)
+    GAMEOVER_BORDER_COLOR = (150, 150, 150)
+    GAMEOVER_TITLE_COLOR = (200, 50, 50)  # Soft red
+    
     font = pygame.font.Font(None, 36)
     small_font = pygame.font.Font(None, 24)
+    tiny_font = pygame.font.Font(None, 18)
     
     # Update user stats
     auth_manager.update_user_score(username, score)
+    stats = auth_manager.get_user_stats(username)
+    is_new_record = score == stats['high_score'] and score > 0
     
     while True:
         for event in pygame.event.get():
@@ -215,31 +256,39 @@ def show_game_over(screen, clock, score, auth_manager, username):
         
         # Semi-transparent overlay
         overlay = pygame.Surface((800, 600))
-        overlay.set_alpha(128)
-        overlay.fill((0, 0, 0))
+        overlay.set_alpha(180)
+        overlay.fill(BACKGROUND_COLOR)
         screen.blit(overlay, (0, 0))
         
         # Game over box
-        box_rect = pygame.Rect(200, 200, 400, 200)
-        pygame.draw.rect(screen, (50, 50, 50), box_rect)
-        pygame.draw.rect(screen, (255, 255, 255), box_rect, 2)
+        box_rect = pygame.Rect(200, 180, 400, 240)
+        pygame.draw.rect(screen, GAMEOVER_BG_COLOR, box_rect)
+        pygame.draw.rect(screen, GAMEOVER_BORDER_COLOR, box_rect, 2)
         
         # Title
-        title = font.render("GAME OVER", True, (255, 0, 0))
-        screen.blit(title, (400 - title.get_width() // 2, 230))
+        title = font.render("GAME OVER", True, GAMEOVER_TITLE_COLOR)
+        screen.blit(title, (400 - title.get_width() // 2, 210))
+        
+        # New record notification
+        if is_new_record:
+            record_text = small_font.render("NEW RECORD!", True, (50, 150, 50))
+            screen.blit(record_text, (400 - record_text.get_width() // 2, 250))
         
         # Score
-        score_text = small_font.render(f"Final Score: {score}", True, (255, 255, 255))
-        screen.blit(score_text, (400 - score_text.get_width() // 2, 280))
+        score_text = small_font.render(f"Final Score: {score}", True, TEXT_COLOR)
+        screen.blit(score_text, (400 - score_text.get_width() // 2, 290))
         
         # High score
-        stats = auth_manager.get_user_stats(username)
-        high_score_text = small_font.render(f"Best Score: {stats['high_score']}", True, (255, 255, 255))
-        screen.blit(high_score_text, (400 - high_score_text.get_width() // 2, 310))
+        high_score_text = small_font.render(f"Best Score: {stats['high_score']}", True, TEXT_COLOR)
+        screen.blit(high_score_text, (400 - high_score_text.get_width() // 2, 320))
+        
+        # Games played
+        games_text = small_font.render(f"Games Played: {stats['games_played']}", True, TEXT_COLOR)
+        screen.blit(games_text, (400 - games_text.get_width() // 2, 350))
         
         # Instructions
-        inst = small_font.render("Press any key to continue", True, (200, 200, 200))
-        screen.blit(inst, (400 - inst.get_width() // 2, 350))
+        inst = tiny_font.render("Press any key to continue", True, (120, 120, 120))
+        screen.blit(inst, (400 - inst.get_width() // 2, 390))
         
         pygame.display.flip()
         clock.tick(60)

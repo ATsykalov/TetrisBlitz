@@ -7,6 +7,7 @@ A classic Tetris game implementation built with Python and Pygame. The game feat
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Design style: Modern Classic - combining 8-bit aesthetics with contemporary clean interface and flat design.
 
 ## System Architecture
 

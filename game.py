@@ -16,11 +16,13 @@ class TetrisGame:
         self.GRID_X = 300
         self.GRID_Y = 50
         
-        # Colors
-        self.BLACK = (0, 0, 0)
+        # Modern Classic Color Palette
+        self.BACKGROUND_COLOR = (224, 224, 224)  # Светло-серый фон
+        self.GAME_FIELD_COLOR = (208, 208, 208)  # Игровое поле
+        self.GRID_LINE_COLOR = (192, 192, 192)   # Линии сетки
+        self.TEXT_COLOR = (51, 51, 51)           # Основной текст
         self.WHITE = (255, 255, 255)
-        self.GRAY = (128, 128, 128)
-        self.GRID_COLOR = (50, 50, 50)
+        self.LIGHT_GRAY = (200, 200, 200)
         
         # Game state
         self.grid = [[0 for _ in range(self.GRID_WIDTH)] for _ in range(self.GRID_HEIGHT)]
@@ -201,35 +203,41 @@ class TetrisGame:
 
     def draw(self):
         """Draw the game"""
-        self.screen.fill(self.BLACK)
+        # Fill background with light gray
+        self.screen.fill(self.BACKGROUND_COLOR)
         
         # Draw grid background
         grid_rect = pygame.Rect(self.GRID_X, self.GRID_Y, 
                                self.GRID_WIDTH * self.CELL_SIZE, 
                                self.GRID_HEIGHT * self.CELL_SIZE)
-        pygame.draw.rect(self.screen, self.GRID_COLOR, grid_rect)
+        pygame.draw.rect(self.screen, self.GAME_FIELD_COLOR, grid_rect)
         
-        # Draw grid lines
+        # Draw grid lines (subtle)
         for x in range(self.GRID_WIDTH + 1):
-            pygame.draw.line(self.screen, self.GRAY,
+            pygame.draw.line(self.screen, self.GRID_LINE_COLOR,
                            (self.GRID_X + x * self.CELL_SIZE, self.GRID_Y),
-                           (self.GRID_X + x * self.CELL_SIZE, self.GRID_Y + self.GRID_HEIGHT * self.CELL_SIZE))
+                           (self.GRID_X + x * self.CELL_SIZE, self.GRID_Y + self.GRID_HEIGHT * self.CELL_SIZE), 1)
         
         for y in range(self.GRID_HEIGHT + 1):
-            pygame.draw.line(self.screen, self.GRAY,
+            pygame.draw.line(self.screen, self.GRID_LINE_COLOR,
                            (self.GRID_X, self.GRID_Y + y * self.CELL_SIZE),
-                           (self.GRID_X + self.GRID_WIDTH * self.CELL_SIZE, self.GRID_Y + y * self.CELL_SIZE))
+                           (self.GRID_X + self.GRID_WIDTH * self.CELL_SIZE, self.GRID_Y + y * self.CELL_SIZE), 1)
         
-        # Draw placed pieces
+        # Draw placed pieces with modern flat style
         for y in range(self.GRID_HEIGHT):
             for x in range(self.GRID_WIDTH):
                 if self.grid[y][x]:
+                    # Main block
                     rect = pygame.Rect(self.GRID_X + x * self.CELL_SIZE + 1,
                                      self.GRID_Y + y * self.CELL_SIZE + 1,
                                      self.CELL_SIZE - 2, self.CELL_SIZE - 2)
                     pygame.draw.rect(self.screen, self.grid[y][x], rect)
+                    
+                    # Subtle border for definition
+                    border_color = tuple(max(0, c - 30) for c in self.grid[y][x])
+                    pygame.draw.rect(self.screen, border_color, rect, 1)
         
-        # Draw current piece
+        # Draw current piece with modern flat style
         if self.current_piece:
             for dx, dy in self.current_piece.coords:
                 px = self.current_piece.x + dx
@@ -238,7 +246,13 @@ class TetrisGame:
                     x = self.GRID_X + px * self.CELL_SIZE + 1
                     y = self.GRID_Y + py * self.CELL_SIZE + 1
                     rect = pygame.Rect(x, y, self.CELL_SIZE - 2, self.CELL_SIZE - 2)
+                    
+                    # Main block
                     pygame.draw.rect(self.screen, self.current_piece.color, rect)
+                    
+                    # Subtle border for definition  
+                    border_color = tuple(max(0, c - 30) for c in self.current_piece.color)
+                    pygame.draw.rect(self.screen, border_color, rect, 1)
         
         # Draw UI
         self.draw_ui()
@@ -249,23 +263,23 @@ class TetrisGame:
     def draw_ui(self):
         """Draw user interface elements"""
         # Score
-        score_text = self.font.render(f"Score: {self.score}", True, self.WHITE)
+        score_text = self.font.render(f"Score: {self.score}", True, self.TEXT_COLOR)
         self.screen.blit(score_text, (50, 100))
         
         # Level
-        level_text = self.font.render(f"Level: {self.level}", True, self.WHITE)
+        level_text = self.font.render(f"Level: {self.level}", True, self.TEXT_COLOR)
         self.screen.blit(level_text, (50, 130))
         
         # Lines
-        lines_text = self.font.render(f"Lines: {self.lines_cleared}", True, self.WHITE)
+        lines_text = self.font.render(f"Lines: {self.lines_cleared}", True, self.TEXT_COLOR)
         self.screen.blit(lines_text, (50, 160))
         
         # Username
-        user_text = self.font.render(f"Player: {self.username}", True, self.WHITE)
+        user_text = self.font.render(f"Player: {self.username}", True, self.TEXT_COLOR)
         self.screen.blit(user_text, (50, 50))
         
         # Next piece
-        next_text = self.font.render("Next:", True, self.WHITE)
+        next_text = self.font.render("Next:", True, self.TEXT_COLOR)
         self.screen.blit(next_text, (600, 100))
         
         if self.next_piece:
@@ -283,35 +297,46 @@ class TetrisGame:
         ]
         
         for i, text in enumerate(controls):
-            color = self.WHITE if i == 0 else self.GRAY
+            color = self.TEXT_COLOR if i == 0 else self.LIGHT_GRAY
             control_text = self.font.render(text, True, color)
             self.screen.blit(control_text, (50, 250 + i * 25))
 
     def draw_next_piece(self):
-        """Draw the next piece preview"""
+        """Draw the next piece preview with modern styling"""
         if not self.next_piece:
             return
+        
+        # Draw preview box background
+        preview_box = pygame.Rect(580, 115, 100, 80)
+        pygame.draw.rect(self.screen, self.WHITE, preview_box)
+        pygame.draw.rect(self.screen, self.LIGHT_GRAY, preview_box, 1)
         
         start_x = 600
         start_y = 130
         
         for dx, dy in self.next_piece.coords:
-            x = start_x + (dx + 2) * 20  # Offset to center the preview
-            y = start_y + (dy + 2) * 20
-            rect = pygame.Rect(x, y, 18, 18)
+            x = start_x + (dx + 2) * 18  # Slightly smaller preview blocks
+            y = start_y + (dy + 2) * 18
+            rect = pygame.Rect(x, y, 16, 16)
+            
+            # Main block
             pygame.draw.rect(self.screen, self.next_piece.color, rect)
+            
+            # Subtle border
+            border_color = tuple(max(0, c - 30) for c in self.next_piece.color)
+            pygame.draw.rect(self.screen, border_color, rect, 1)
 
     def draw_pause_overlay(self):
         """Draw pause overlay"""
         overlay = pygame.Surface((800, 600))
-        overlay.set_alpha(100)
-        overlay.fill(self.BLACK)
+        overlay.set_alpha(180)
+        overlay.fill(self.BACKGROUND_COLOR)
         self.screen.blit(overlay, (0, 0))
         
-        pause_text = self.big_font.render("PAUSED", True, self.WHITE)
+        pause_text = self.big_font.render("PAUSED", True, self.TEXT_COLOR)
         text_rect = pause_text.get_rect(center=(400, 300))
         self.screen.blit(pause_text, text_rect)
         
-        resume_text = self.font.render("Press P to resume or ESC for menu", True, self.WHITE)
+        resume_text = self.font.render("Press P to resume or ESC for menu", True, self.TEXT_COLOR)
         resume_rect = resume_text.get_rect(center=(400, 350))
         self.screen.blit(resume_text, resume_rect)
