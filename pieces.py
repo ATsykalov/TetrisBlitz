@@ -1,62 +1,34 @@
 import random
 
-# Tetris piece shapes and colors
+# Tetris piece shapes using coordinate system
 TETRIS_SHAPES = {
     'I': {
-        'shape': [
-            ['....'],
-            ['IIII'],
-            ['....'],
-            ['....']
-        ],
-        'color': (0, 255, 255)  # Cyan
+        'coords': [(0, -1), (0, 0), (0, 1), (0, 2)],
+        'color': (0, 255, 255)  # Голубой
     },
     'O': {
-        'shape': [
-            ['OO'],
-            ['OO']
-        ],
-        'color': (255, 255, 0)  # Yellow
+        'coords': [(0, 0), (1, 0), (0, 1), (1, 1)],
+        'color': (255, 255, 0)  # Жёлтый
     },
     'T': {
-        'shape': [
-            ['.T.'],
-            ['TTT'],
-            ['...']
-        ],
-        'color': (128, 0, 128)  # Purple
+        'coords': [(0, 0), (-1, 0), (1, 0), (0, 1)],
+        'color': (128, 0, 128)  # Фиолетовый
     },
     'S': {
-        'shape': [
-            ['.SS'],
-            ['SS.'],
-            ['...']
-        ],
-        'color': (0, 255, 0)  # Green
+        'coords': [(0, 0), (1, 0), (0, -1), (-1, -1)],
+        'color': (0, 255, 0)  # Зелёный
     },
     'Z': {
-        'shape': [
-            ['ZZ.'],
-            ['.ZZ'],
-            ['...']
-        ],
-        'color': (255, 0, 0)  # Red
-    },
-    'J': {
-        'shape': [
-            ['J..'],
-            ['JJJ'],
-            ['...']
-        ],
-        'color': (0, 0, 255)  # Blue
+        'coords': [(0, 0), (-1, 0), (0, -1), (1, -1)],
+        'color': (255, 0, 0)  # Красный
     },
     'L': {
-        'shape': [
-            ['..L'],
-            ['LLL'],
-            ['...']
-        ],
-        'color': (255, 165, 0)  # Orange
+        'coords': [(0, 0), (-1, 0), (1, 0), (1, 1)],
+        'color': (255, 165, 0)  # Оранжевый
+    },
+    'J': {
+        'coords': [(0, 0), (-1, 0), (1, 0), (-1, 1)],
+        'color': (0, 0, 255)  # Синий
     }
 }
 
@@ -67,42 +39,27 @@ class TetrisPiece:
         
         self.type = piece_type
         self.color = TETRIS_SHAPES[piece_type]['color']
-        self.shape = self.convert_shape(TETRIS_SHAPES[piece_type]['shape'])
+        self.coords = TETRIS_SHAPES[piece_type]['coords'][:]  # Copy coordinates
         self.x = 0
         self.y = 0
     
-    def convert_shape(self, string_shape):
-        """Convert string representation to boolean matrix"""
-        converted = []
-        for row in string_shape:
-            converted_row = []
-            for char in row:
-                converted_row.append(char != '.')
-            converted.append(converted_row)
-        return converted
+    def get_absolute_coords(self):
+        """Get absolute coordinates of all blocks"""
+        return [(self.x + dx, self.y + dy) for dx, dy in self.coords]
     
-    def get_rotated_shape(self):
-        """Return the shape rotated 90 degrees clockwise"""
-        rows = len(self.shape)
-        cols = len(self.shape[0])
-        
-        # Create new shape with swapped dimensions
-        rotated = [[False for _ in range(rows)] for _ in range(cols)]
-        
-        for i in range(rows):
-            for j in range(cols):
-                rotated[j][rows - 1 - i] = self.shape[i][j]
-        
-        return rotated
+    def get_rotated_coords(self):
+        """Return coordinates rotated 90 degrees clockwise"""
+        # Rotate each coordinate: (x, y) -> (y, -x)
+        return [(dy, -dx) for dx, dy in self.coords]
     
     def rotate(self):
         """Rotate the piece 90 degrees clockwise"""
-        self.shape = self.get_rotated_shape()
+        self.coords = self.get_rotated_coords()
     
     def copy(self):
         """Create a copy of this piece"""
         new_piece = TetrisPiece(self.type)
-        new_piece.shape = [row[:] for row in self.shape]
+        new_piece.coords = self.coords[:]
         new_piece.x = self.x
         new_piece.y = self.y
         return new_piece

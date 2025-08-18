@@ -56,31 +56,29 @@ class TetrisGame:
         self.current_piece.y = 0
         
         # Check for game over
-        if self.check_collision(self.current_piece.x, self.current_piece.y, self.current_piece.shape):
+        if self.check_collision(self.current_piece.x, self.current_piece.y, self.current_piece.coords):
             self.game_over = True
         
         self.next_piece = TetrisPiece()
 
-    def check_collision(self, x, y, shape):
+    def check_collision(self, x, y, coords):
         """Check if a piece collides with the grid or boundaries"""
-        for py, row in enumerate(shape):
-            for px, cell in enumerate(row):
-                if cell:
-                    nx, ny = x + px, y + py
-                    if (nx < 0 or nx >= self.GRID_WIDTH or 
-                        ny >= self.GRID_HEIGHT or 
-                        (ny >= 0 and self.grid[ny][nx])):
-                        return True
+        for dx, dy in coords:
+            nx, ny = x + dx, y + dy
+            if (nx < 0 or nx >= self.GRID_WIDTH or 
+                ny >= self.GRID_HEIGHT or 
+                (ny >= 0 and self.grid[ny][nx])):
+                return True
         return False
 
     def place_piece(self):
         """Place the current piece on the grid"""
-        for py, row in enumerate(self.current_piece.shape):
-            for px, cell in enumerate(row):
-                if cell:
-                    nx, ny = self.current_piece.x + px, self.current_piece.y + py
-                    if 0 <= ny < self.GRID_HEIGHT and 0 <= nx < self.GRID_WIDTH:
-                        self.grid[ny][nx] = self.current_piece.color
+        if not self.current_piece:
+            return
+        for dx, dy in self.current_piece.coords:
+            nx, ny = self.current_piece.x + dx, self.current_piece.y + dy
+            if 0 <= ny < self.GRID_HEIGHT and 0 <= nx < self.GRID_WIDTH:
+                self.grid[ny][nx] = self.current_piece.color
 
     def clear_lines(self):
         """Clear completed lines and return number of lines cleared"""
@@ -133,10 +131,12 @@ class TetrisGame:
 
     def move_piece(self, dx, dy):
         """Move the current piece"""
+        if not self.current_piece:
+            return False
         new_x = self.current_piece.x + dx
         new_y = self.current_piece.y + dy
         
-        if not self.check_collision(new_x, new_y, self.current_piece.shape):
+        if not self.check_collision(new_x, new_y, self.current_piece.coords):
             self.current_piece.x = new_x
             self.current_piece.y = new_y
             return True
@@ -144,20 +144,22 @@ class TetrisGame:
 
     def rotate_piece(self):
         """Rotate the current piece"""
-        rotated_shape = self.current_piece.get_rotated_shape()
+        if not self.current_piece:
+            return
+        rotated_coords = self.current_piece.get_rotated_coords()
         
         # Try rotation at current position
-        if not self.check_collision(self.current_piece.x, self.current_piece.y, rotated_shape):
-            self.current_piece.shape = rotated_shape
+        if not self.check_collision(self.current_piece.x, self.current_piece.y, rotated_coords):
+            self.current_piece.coords = rotated_coords
             return
         
         # Try wall kicks
         kicks = [(1, 0), (-1, 0), (0, -1), (2, 0), (-2, 0)]
         for dx, dy in kicks:
-            if not self.check_collision(self.current_piece.x + dx, self.current_piece.y + dy, rotated_shape):
+            if not self.check_collision(self.current_piece.x + dx, self.current_piece.y + dy, rotated_coords):
                 self.current_piece.x += dx
                 self.current_piece.y += dy
-                self.current_piece.shape = rotated_shape
+                self.current_piece.coords = rotated_coords
                 return
 
     def hard_drop(self):
@@ -222,14 +224,14 @@ class TetrisGame:
         
         # Draw current piece
         if self.current_piece:
-            for py, row in enumerate(self.current_piece.shape):
-                for px, cell in enumerate(row):
-                    if cell:
-                        x = self.GRID_X + (self.current_piece.x + px) * self.CELL_SIZE + 1
-                        y = self.GRID_Y + (self.current_piece.y + py) * self.CELL_SIZE + 1
-                        if y >= self.GRID_Y:  # Only draw visible parts
-                            rect = pygame.Rect(x, y, self.CELL_SIZE - 2, self.CELL_SIZE - 2)
-                            pygame.draw.rect(self.screen, self.current_piece.color, rect)
+            for dx, dy in self.current_piece.coords:
+                px = self.current_piece.x + dx
+                py = self.current_piece.y + dy
+                if 0 <= px < self.GRID_WIDTH and py >= 0:  # Only draw visible parts
+                    x = self.GRID_X + px * self.CELL_SIZE + 1
+                    y = self.GRID_Y + py * self.CELL_SIZE + 1
+                    rect = pygame.Rect(x, y, self.CELL_SIZE - 2, self.CELL_SIZE - 2)
+                    pygame.draw.rect(self.screen, self.current_piece.color, rect)
         
         # Draw UI
         self.draw_ui()
@@ -286,13 +288,11 @@ class TetrisGame:
         start_x = 600
         start_y = 130
         
-        for py, row in enumerate(self.next_piece.shape):
-            for px, cell in enumerate(row):
-                if cell:
-                    x = start_x + px * 20
-                    y = start_y + py * 20
-                    rect = pygame.Rect(x, y, 18, 18)
-                    pygame.draw.rect(self.screen, self.next_piece.color, rect)
+        for dx, dy in self.next_piece.coords:
+            x = start_x + (dx + 2) * 20  # Offset to center the preview
+            y = start_y + (dy + 2) * 20
+            rect = pygame.Rect(x, y, 18, 18)
+            pygame.draw.rect(self.screen, self.next_piece.color, rect)
 
     def draw_pause_overlay(self):
         """Draw pause overlay"""
