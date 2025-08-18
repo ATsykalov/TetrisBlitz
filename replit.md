@@ -2,7 +2,7 @@
 
 ## Overview
 
-A classic Tetris game implementation built with Python and Pygame. The game features user authentication, score tracking, and persistent data storage. Players can log in with usernames, play Tetris with standard piece mechanics, and have their high scores and game statistics saved across sessions.
+A complete classic Tetris game implementation built with Python and Pygame, featuring Modern Classic design, smooth animations, and user authentication system. The game combines retro 80s aesthetics with contemporary smooth animations and a light color scheme. Players can log in with usernames, enjoy fluid gameplay with animated piece movement and line clearing effects, and have their high scores and statistics saved across sessions.
 
 ## User Preferences
 
@@ -27,11 +27,13 @@ Design style: Modern Classic - combining 8-bit aesthetics with contemporary clea
 - **User Profile Schema**: Stores username, high_score, and games_played for each user
 - **Automatic Initialization**: Creates default user profiles on first login
 
-### Game Mechanics
+### Game Mechanics  
 - **Standard Tetris Rules**: Implements classic 7-piece Tetris with standard shapes (I, O, T, S, Z, J, L)
 - **Grid-Based System**: 10x20 playing field with collision detection
-- **Progressive Difficulty**: Level-based speed increases as lines are cleared
-- **Score System**: Points awarded for line clears with score persistence
+- **Progressive Difficulty**: Level-based speed increases as lines are cleared (every 500 points)
+- **Score System**: Quadratic scoring (1²-4² points for 1-4 lines) with score persistence
+- **Smooth Animations**: Fluid piece movement with interpolated positions and line clearing effects
+- **Modern Interface**: Clean UI with WASD/Arrow key support and intuitive navigation
 
 ## External Dependencies
 
@@ -50,3 +52,28 @@ Design style: Modern Classic - combining 8-bit aesthetics with contemporary clea
 - **replit**: Replit-specific database integration (gracefully handled if unavailable)
 
 The architecture prioritizes simplicity and reliability, with automatic fallbacks ensuring the game works in any Python environment while taking advantage of Replit-specific features when available.
+
+## Recent Changes (August 2025)
+
+### Animation System Implementation
+- Added smooth interpolated movement for falling pieces using floating-point positions
+- Implemented line clearing animations with white flash effects during 500ms animation cycles
+- Enhanced visual feedback with progressive fade-in effects on menu screens
+
+### Interface Improvements  
+- Created animated main menu with decorative tetromino background elements
+- Updated pause screen with 70% dark overlay as specified
+- Redesigned Game Over screen with "Play Again" and "Main Menu" navigation buttons
+- Fixed control text display by replacing Unicode arrows with WASD text
+- Added dual input support for both WASD and arrow keys
+
+### User Experience Enhancements
+- Removed "Player" label from game interface for cleaner appearance  
+- Improved Next piece preview box with centered positioning and better styling
+- Enhanced button navigation with consistent highlight/selection states
+- Added comprehensive README.md documentation with full project details
+
+### Technical Architecture Updates
+- Modular animation system with configurable timing and interpolation speeds
+- Event-driven state management for smooth menu transitions
+- Optimized rendering pipeline for 60 FPS gameplay with animation support
