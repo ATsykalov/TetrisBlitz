@@ -77,3 +77,10 @@ The architecture prioritizes simplicity and reliability, with automatic fallback
 - Modular animation system with configurable timing and interpolation speeds
 - Event-driven state management for smooth menu transitions
 - Optimized rendering pipeline for 60 FPS gameplay with animation support
+
+### Deployment Configuration (August 18, 2025)
+- **Issue Identified**: Current deployment configured as Autoscale (Cloud Run) expecting HTTP web application
+- **Problem**: Tetris is a desktop GUI application requiring VNC display, not HTTP endpoints
+- **Solution Required**: Change to Reserved VM deployment with VNC output for proper Pygame support
+- **Run Command**: `python main.py` (entry point verified and working)
+- **Dependencies**: pygame>=2.6.1 (already installed via pyproject.toml)
