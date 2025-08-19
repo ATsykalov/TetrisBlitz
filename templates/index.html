@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Tetris Game - Modern Classic</title>
     <style>
         * {
@@ -306,10 +306,20 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .mobile-btn:active {
+        .mobile-btn:active,
+        .mobile-btn:focus {
             background: #2c5aa0;
             color: white;
             transform: scale(0.95);
+            outline: none;
+        }
+        
+        /* Safari/iOS специфичные стили */
+        .mobile-btn {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .mobile-btn.wide {

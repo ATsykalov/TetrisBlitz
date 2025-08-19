@@ -126,57 +126,68 @@ class TetrisGame {
         const pauseBtn = document.getElementById('pauseBtn');
         
         // Функции для предотвращения прокрутки на мобильных
-        const preventDefault = (e) => e.preventDefault();
+        const preventDefault = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        };
         
-        if (leftBtn) {
-            leftBtn.addEventListener('touchstart', preventDefault);
-            leftBtn.addEventListener('touchend', preventDefault);
-            leftBtn.addEventListener('click', () => {
-                if (!this.isGameOver && !this.isPaused) {
-                    this.movePiece(-1, 0);
-                }
+        // Универсальная функция для добавления событий
+        const addButtonEvents = (button, action) => {
+            if (!button) return;
+            
+            // Предотвращение прокрутки
+            button.addEventListener('touchstart', preventDefault, { passive: false });
+            button.addEventListener('touchmove', preventDefault, { passive: false });
+            button.addEventListener('touchend', preventDefault, { passive: false });
+            
+            // Safari/iOS совместимость - используем touchstart вместо click
+            button.addEventListener('touchstart', (e) => {
+                preventDefault(e);
+                action();
+            }, { passive: false });
+            
+            // Fallback для десктопа
+            button.addEventListener('click', (e) => {
+                preventDefault(e);
+                action();
             });
-        }
+            
+            // Дополнительно для Safari
+            button.addEventListener('mousedown', (e) => {
+                preventDefault(e);
+                action();
+            });
+        };
         
-        if (rightBtn) {
-            rightBtn.addEventListener('touchstart', preventDefault);
-            rightBtn.addEventListener('touchend', preventDefault);
-            rightBtn.addEventListener('click', () => {
-                if (!this.isGameOver && !this.isPaused) {
-                    this.movePiece(1, 0);
-                }
-            });
-        }
+        addButtonEvents(leftBtn, () => {
+            if (!this.isGameOver && !this.isPaused) {
+                this.movePiece(-1, 0);
+            }
+        });
         
-        if (downBtn) {
-            downBtn.addEventListener('touchstart', preventDefault);
-            downBtn.addEventListener('touchend', preventDefault);
-            downBtn.addEventListener('click', () => {
-                if (!this.isGameOver && !this.isPaused) {
-                    this.movePiece(0, 1);
-                }
-            });
-        }
+        addButtonEvents(rightBtn, () => {
+            if (!this.isGameOver && !this.isPaused) {
+                this.movePiece(1, 0);
+            }
+        });
         
-        if (rotateBtn) {
-            rotateBtn.addEventListener('touchstart', preventDefault);
-            rotateBtn.addEventListener('touchend', preventDefault);
-            rotateBtn.addEventListener('click', () => {
-                if (!this.isGameOver && !this.isPaused) {
-                    this.rotatePiece();
-                }
-            });
-        }
+        addButtonEvents(downBtn, () => {
+            if (!this.isGameOver && !this.isPaused) {
+                this.movePiece(0, 1);
+            }
+        });
         
-        if (pauseBtn) {
-            pauseBtn.addEventListener('touchstart', preventDefault);
-            pauseBtn.addEventListener('touchend', preventDefault);
-            pauseBtn.addEventListener('click', () => {
-                if (!this.isGameOver) {
-                    this.togglePause();
-                }
-            });
-        }
+        addButtonEvents(rotateBtn, () => {
+            if (!this.isGameOver && !this.isPaused) {
+                this.rotatePiece();
+            }
+        });
+        
+        addButtonEvents(pauseBtn, () => {
+            if (!this.isGameOver) {
+                this.togglePause();
+            }
+        });
     }
     
     createPiece() {
