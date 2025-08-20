@@ -79,12 +79,9 @@ def save_score():
         save_users(users)
 
         return jsonify({
-            'success':
-            True,
-            'stats':
-            users[username],
-            'new_record':
-            score == users[username]['high_score'] and score > 0
+            'success': True,
+            'stats': users[username],
+            'new_record': score == users[username]['high_score'] and score > 0
         })
 
     return jsonify({'error': 'Пользователь не найден'}), 404
